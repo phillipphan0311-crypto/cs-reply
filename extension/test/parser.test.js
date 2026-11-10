@@ -39,17 +39,32 @@ test("returns no records for a document without the expected order columns", () 
 
 test("captures the complete visible detail text and keeps the URL ID in smsInternalId", () => {
   const detail = parseOrderDetailDocument(
-    "Order details\nStatus: New\nSynthetic order note",
+    "Order #9300017\nDESIGNED PAID\nDogFactsFun\n#8991000111\nJan 5, 09:30 Operator Example\nSHIP BY JAN 8\nSynthetic order note mentions URGENT",
     "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19&token=synthetic-secret",
   );
-  assert.equal(detail.smsOrderId, "");
-  assert.equal(detail.etsyOrderId, "");
+  assert.equal(detail.smsOrderId, "9300017");
+  assert.equal(detail.etsyOrderId, "8991000111");
   assert.equal(detail.smsInternalId, "22c7cf78-b966-4457-9136-08df3b396c19");
-  assert.equal(detail.detailText, "Order details\nStatus: New\nSynthetic order note");
+  assert.equal(detail.shop, "DogFactsFun");
+  assert.equal(detail.status, "Designed");
+  assert.equal(detail.orderDate, "Jan 5, 09:30");
+  assert.equal(detail.shipDeadline, "JAN 8");
+  assert.deepEqual(detail.orderAlerts, []);
+  assert.equal(detail.detailText, "Order #9300017\nDESIGNED PAID\nDogFactsFun\n#8991000111\nJan 5, 09:30 Operator Example\nSHIP BY JAN 8\nSynthetic order note mentions URGENT");
   assert.equal(detail.detailUrl, "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19");
   assert.equal(detail.marketplace, "Etsy");
 });
 
 test("does not treat a page without an internal order ID as an order detail page", () => {
   assert.equal(parseOrderDetailDocument("Some page", "https://sms.example.test/orders/detail"), null);
+});
+
+test("does not assign an Etsy ID when no supported shop block is present", () => {
+  const detail = parseOrderDetailDocument(
+    "Order #9300017\nUnknown shop\n#8991000111",
+    "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19",
+  );
+  assert.equal(detail.smsOrderId, "9300017");
+  assert.equal(detail.etsyOrderId, "");
+  assert.equal(detail.shop, "");
 });

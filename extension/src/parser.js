@@ -1,5 +1,10 @@
 (function attachParser(root) {
   const ALERTS = ["URGENT", "LATE SHIP"];
+  const SHOPS = [
+    "VuEmbroidery", "KevinEmbroidery", "MarkEmbroideryy",
+    "BruceEmbroideryStore", "DogFactsFun", "VinkEmbroidery",
+  ];
+  const STATUSES = ["Pending", "New", "Designing", "Designed", "Clarification"];
   const clean = (value) => decodeEntities(value)
     .replace(/<br\s*\/?\s*>/gi, "\n")
     .replace(/<[^>]*>/g, " ")
@@ -96,21 +101,35 @@
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(smsInternalId)) return null;
     const safeUrl = new URL(pageUrlObject.origin + pageUrlObject.pathname);
     safeUrl.searchParams.set("id", smsInternalId);
+    const detailText = String(visibleText ?? "").trim();
+    const lines = detailText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    const headingLine = lines.find((line) => /^Order\s*#\s*\d+/i.test(line)) ?? "";
+    const smsOrderId = headingLine.match(/^Order\s*#\s*(\d+)/i)?.[1] ?? "";
+    const headingIndex = lines.indexOf(headingLine);
+    const statusWindow = lines.slice(Math.max(0, headingIndex), Math.max(0, headingIndex) + 4).join(" ");
+    const status = STATUSES.find((value) => new RegExp("\\b" + value + "\\b", "i").test(statusWindow)) ?? "";
+    const shopIndex = lines.findIndex((line) => SHOPS.some((name) => line === name || line.startsWith(name + " ")));
+    const shop = SHOPS.find((name) => shopIndex >= 0 &&
+      (lines[shopIndex] === name || lines[shopIndex].startsWith(name + " "))) ?? "";
+    const shopWindow = shop ? lines.slice(shopIndex, shopIndex + 7) : [];
+    const etsyOrderId = shopWindow.map((line) => line.match(/#\s*(\d{6,})/)?.[1]).find(Boolean) ?? "";
+    const orderDate = shopWindow.map((line) => line.match(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{1,2}:\d{2}\b/i)?.[0]).find(Boolean) ?? "";
+    const shipDeadline = detailText.match(/\bSHIP\s+BY\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2})\b/i)?.[1] ?? "";
     return {
-      smsOrderId: "",
-      etsyOrderId: "",
+      smsOrderId,
+      etsyOrderId,
       smsInternalId,
-      shop: "",
+      shop,
       marketplace: "Etsy",
-      orderDate: "",
-      shipDeadline: "",
-      status: "",
+      orderDate,
+      shipDeadline,
+      status,
       items: "",
       tags: [],
       orderAlerts: [],
       notes: "",
       detailUrl: safeUrl.href,
-      detailText: String(visibleText ?? "").trim(),
+      detailText,
     };
   }
 

@@ -28,7 +28,9 @@ These are planned product areas, not claims that the features already exist.
 
 The supplied page was an Angular 22.2.3 application using ngx-datatable. The visible table included tabs such as Pending, New, Designing, Designed, and Clarification; filters for Order ID / Order No., Store Manager, and Store; and columns including ID, Store, Order Number, Order Date, Status, Items, Tags, and Notes.
 
-The first prototype reads currently visible table rows only. Do not assume it automatically switches tabs, paginates, scrolls, opens detail pages, or reads Etsy Inbox messages unless that behavior is implemented and verified.
+The extension reads currently visible table rows, and can read the rendered text of a detail page that the operator has opened manually. It does not switch tabs, paginate, scroll, open detail pages automatically, or read Etsy Inbox messages.
+
+On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOrderId from the numeric order marker in the supported shop block, and smsInternalId from the URL query parameter. When a marker cannot be matched, leave that field empty. The full rendered body text is also retained in the extension-specific detailText field; it may include customer contact or address information.
 
 ### Canonical order record shape
 
@@ -67,7 +69,7 @@ The values above are illustrative examples, not live customer data.
 - Deduplicate by SMS Order ID, falling back to Etsy Order ID only when the SMS ID is absent.
 
 ## Existing prototype history
-Earlier prototype archives were discussed as v0.1.0 and v0.1.1. They are not present in this repository. The v0.1.2 canonical record schema is implemented in the first extension prototype; see [docs/PROGRESS.md](./PROGRESS.md) for its tested behavior and live-page limitations.
+Earlier prototype archives were discussed as v0.1.0 and v0.1.1. They are not present in this repository. The canonical list schema is implemented in the extension; the detail export adds detailText while retaining the three separate IDs. See [docs/PROGRESS.md](./PROGRESS.md) for current coverage and limitations.
 
 ## Privacy
 Customer email, address, and phone may be useful for specific support workflows, but must be handled minimally:
