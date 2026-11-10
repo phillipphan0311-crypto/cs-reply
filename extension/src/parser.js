@@ -88,5 +88,31 @@
     }
     return records;
   }
-  root.CSReplyParser = { parseOrdersDocument };
+
+  function parseOrderDetailDocument(visibleText, pageUrl = "") {
+    let pageUrlObject;
+    try { pageUrlObject = new URL(pageUrl); } catch { return null; }
+    const smsInternalId = pageUrlObject.searchParams.get("id") ?? "";
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(smsInternalId)) return null;
+    const safeUrl = new URL(pageUrlObject.origin + pageUrlObject.pathname);
+    safeUrl.searchParams.set("id", smsInternalId);
+    return {
+      smsOrderId: "",
+      etsyOrderId: "",
+      smsInternalId,
+      shop: "",
+      marketplace: "Etsy",
+      orderDate: "",
+      shipDeadline: "",
+      status: "",
+      items: "",
+      tags: [],
+      orderAlerts: [],
+      notes: "",
+      detailUrl: safeUrl.href,
+      detailText: String(visibleText ?? "").trim(),
+    };
+  }
+
+  root.CSReplyParser = { parseOrdersDocument, parseOrderDetailDocument };
 })(globalThis);

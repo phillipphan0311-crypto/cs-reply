@@ -8,15 +8,16 @@ async function readVisibleOrders() {
     target: { tabId: tab.id },
     files: ["src/parser.js", "src/page-extractor.js"],
   });
-  return results[0]?.result ?? [];
+  return results[0]?.result ?? { kind: "unsupported", records: [] };
 }
 
 async function exportOrders(format) {
   buttons.forEach((button) => { button.disabled = true; });
   status.textContent = "Reading visible rows…";
   try {
-    const records = await readVisibleOrders();
-    if (!records.length) throw new Error("No matching visible order rows were found.");
+    const result = await readVisibleOrders();
+    const records = result.records ?? [];
+    if (!records.length) throw new Error("No order list or order detail was found on this page.");
     const content = format === "json" ? CSReplyExport.toJson(records) : CSReplyExport.toCsv(records);
     const blob = new Blob([content], { type: format === "json" ? "application/json" : "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -25,7 +26,7 @@ async function exportOrders(format) {
     link.download = "etsy-sms-orders-" + new Date().toISOString().slice(0, 10) + "." + format;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    status.textContent = "Exported " + records.length + " visible row(s).";
+    status.textContent = result.kind === "detail" ? "Exported one order detail." : "Exported " + records.length + " visible row(s).";
   } catch (error) {
     status.textContent = error.message || "Could not read this tab.";
   } finally {

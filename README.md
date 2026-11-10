@@ -38,15 +38,15 @@ This repository is the source of truth for the CS Reply project. The current dev
 
 ## Development status
 
-The first Chrome extension prototype is in [extension/](./extension/). It reads visible SMS Orders List rows only after the operator opens the extension and exports JSON or CSV. It does not send messages or navigate the SMS app.
+The Chrome extension prototype is in [extension/](./extension/). It exports visible SMS Orders List rows, or the current order detail page when opened manually, as JSON or CSV. It does not send messages or navigate the SMS app. On a detail page it stores the rendered page text in detailText; smsInternalId comes from the URL id parameter, and the other two IDs remain empty rather than being inferred.
 
 ### Install locally
 
 1. Open chrome://extensions and enable **Developer mode**.
 2. Choose **Load unpacked** and select this repository's extension/ folder.
-3. Open the SMS Orders List, then open the extension and choose JSON or CSV export.
+3. Open the SMS Orders List or manually open one order's detail page, then open the extension and choose JSON or CSV export.
 
-The extension requests activeTab and scripting only. It has no configured host-wide access. Extraction from the live SMS page still needs manual verification against that page's current DOM.
+The extension requests activeTab and scripting only. It has no configured host-wide access. Detail capture uses the page's rendered body text and the URL id; it does not inspect hidden DOM values. The full text export may include personal details displayed by the order page, so keep the downloaded file local and handle it as customer data.
 
 ### Run parser tests
 

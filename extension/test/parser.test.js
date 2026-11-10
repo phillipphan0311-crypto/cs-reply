@@ -4,7 +4,7 @@ import "../src/parser.js";
 import { readFile } from "node:fs/promises";
 
 const fixture = await readFile(new URL("./fixtures/orders-list.html", import.meta.url), "utf8");
-const { parseOrdersDocument } = globalThis.CSReplyParser;
+const { parseOrdersDocument, parseOrderDetailDocument } = globalThis.CSReplyParser;
 
 test("keeps SMS, Etsy, and internal IDs separate and extracts row data", () => {
   const records = parseOrdersDocument(fixture, "https://sms.example.test/orders");
@@ -35,4 +35,21 @@ test("deduplicates by SMS ID, falling back to Etsy ID only when SMS ID is missin
 
 test("returns no records for a document without the expected order columns", () => {
   assert.deepEqual(parseOrdersDocument("<html><body>No table</body></html>", "https://example.test"), []);
+});
+
+test("captures the complete visible detail text and keeps the URL ID in smsInternalId", () => {
+  const detail = parseOrderDetailDocument(
+    "Order details\nStatus: New\nSynthetic order note",
+    "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19&token=synthetic-secret",
+  );
+  assert.equal(detail.smsOrderId, "");
+  assert.equal(detail.etsyOrderId, "");
+  assert.equal(detail.smsInternalId, "22c7cf78-b966-4457-9136-08df3b396c19");
+  assert.equal(detail.detailText, "Order details\nStatus: New\nSynthetic order note");
+  assert.equal(detail.detailUrl, "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19");
+  assert.equal(detail.marketplace, "Etsy");
+});
+
+test("does not treat a page without an internal order ID as an order detail page", () => {
+  assert.equal(parseOrderDetailDocument("Some page", "https://sms.example.test/orders/detail"), null);
 });

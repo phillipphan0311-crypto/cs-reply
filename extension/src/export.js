@@ -2,7 +2,7 @@
   const fields = [
     "smsOrderId", "etsyOrderId", "smsInternalId", "shop", "marketplace",
     "orderDate", "shipDeadline", "status", "items", "tags", "orderAlerts",
-    "notes", "detailUrl",
+    "notes", "detailUrl", "detailText",
   ];
   const csvValue = (value) => {
     const text = Array.isArray(value) ? value.join(" | ") : String(value ?? "");
