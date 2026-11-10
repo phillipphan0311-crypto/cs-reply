@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "CS Reply — Etsy SMS Orders Reader",
+  "version": "0.1.2",
+  "description": "Export visible SMS Orders List rows for CS Reply.",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_title": "Read visible Etsy SMS orders",
+    "default_popup": "popup/popup.html"
+  }
+}

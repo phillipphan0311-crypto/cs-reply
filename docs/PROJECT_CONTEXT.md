@@ -67,7 +67,7 @@ The values above are illustrative examples, not live customer data.
 - Deduplicate by SMS Order ID, falling back to Etsy Order ID only when the SMS ID is absent.
 
 ## Existing prototype history
-Earlier prototype archives were discussed as v0.1.0 and v0.1.1. They are not automatically present in this repository. Do not assume source code or ZIP files have been committed. The proposed v0.1.2 schema is documented above; only mark it implemented after code is added and tested.
+Earlier prototype archives were discussed as v0.1.0 and v0.1.1. They are not present in this repository. The v0.1.2 canonical record schema is implemented in the first extension prototype; see [docs/PROGRESS.md](./PROGRESS.md) for its tested behavior and live-page limitations.
 
 ## Privacy
 Customer email, address, and phone may be useful for specific support workflows, but must be handled minimally:

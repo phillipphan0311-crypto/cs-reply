@@ -34,7 +34,20 @@ This repository is the source of truth for the CS Reply project. The current dev
 
 - [AGENTS.md](./AGENTS.md) — instructions for AI coding agents.
 - [docs/PROJECT_CONTEXT.md](./docs/PROJECT_CONTEXT.md) — product scope, data model, and known constraints.
+- [docs/PROGRESS.md](./docs/PROGRESS.md) — implemented work and current limitations.
 
 ## Development status
 
-Planning and early prototype stage. Do not assume that planned features are implemented. Update this section as working code is added.
+The first Chrome extension prototype is in [extension/](./extension/). It reads visible SMS Orders List rows only after the operator opens the extension and exports JSON or CSV. It does not send messages or navigate the SMS app.
+
+### Install locally
+
+1. Open chrome://extensions and enable **Developer mode**.
+2. Choose **Load unpacked** and select this repository's extension/ folder.
+3. Open the SMS Orders List, then open the extension and choose JSON or CSV export.
+
+The extension requests activeTab and scripting only. It has no configured host-wide access. Extraction from the live SMS page still needs manual verification against that page's current DOM.
+
+### Run parser tests
+
+Run npm test from the repository root. Tests use only Node's built-in test runner and synthetic HTML; there are no package dependencies.
