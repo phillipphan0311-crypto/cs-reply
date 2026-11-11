@@ -38,7 +38,7 @@ This repository is the source of truth for the CS Reply project. The current dev
 
 ## Development status
 
-The Chrome extension prototype is in [extension/](./extension/). It exports visible SMS Orders List rows, or the current order detail page when opened manually, as JSON or CSV. On a detail page, smsOrderId is read from the Order heading, etsyOrderId from the Etsy-number area adjacent to a supported shop name, and smsInternalId from the URL id parameter. The rendered page text is retained in detailText.
+The Chrome extension prototype is in [extension/](./extension/). It exports visible SMS Orders List rows, or the current order detail page when opened manually, as JSON or CSV. List exports use an `orders-list` filename; detail exports use `order-detail` plus the SMS Order ID. On a detail page, smsOrderId is read from the Order heading, etsyOrderId from the Etsy-number area adjacent to a supported shop name, and smsInternalId from the URL id parameter. The rendered page text is retained in detailText.
 
 ### Install locally
 

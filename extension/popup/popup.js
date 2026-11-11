@@ -23,7 +23,7 @@ async function exportOrders(format) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "etsy-sms-orders-" + new Date().toISOString().slice(0, 10) + "." + format;
+    link.download = CSReplyFilename.create(result.kind, records, format);
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     status.textContent = result.kind === "detail" ? "Exported one order detail." : "Exported " + records.length + " visible row(s).";

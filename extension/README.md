@@ -1,4 +1,4 @@
-# CS Reply Etsy SMS Reader 0.1.4
+# CS Reply Etsy SMS Reader 0.1.5
 
 ## Install
 
@@ -6,6 +6,8 @@
 2. Open chrome://extensions and enable Developer mode.
 3. Choose Load unpacked and select this extension folder.
 4. Open the SMS Orders List or an order detail page, then open the extension and export JSON or CSV.
+
+List files are named `etsy-sms-orders-list-YYYY-MM-DD`; a single-order detail file is named `etsy-sms-order-detail-SMSID-YYYY-MM-DD`.
 
 ## Order detail export
 
