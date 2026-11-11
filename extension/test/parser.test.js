@@ -41,6 +41,7 @@ test("captures the complete visible detail text and keeps the URL ID in smsInter
   const detail = parseOrderDetailDocument(
     "Order #9300017\nDESIGNED PAID\nDogFactsFun\n#8991000111\nJan 5, 09:30 Operator Example\nSHIP BY JAN 8\nSynthetic order note mentions URGENT",
     "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19&token=synthetic-secret",
+    "Customer: Is my order confirmed?\nReply: Yes, it is confirmed.",
   );
   assert.equal(detail.smsOrderId, "9300017");
   assert.equal(detail.etsyOrderId, "8991000111");
@@ -53,6 +54,7 @@ test("captures the complete visible detail text and keeps the URL ID in smsInter
   assert.equal(detail.detailText, "Order #9300017\nDESIGNED PAID\nDogFactsFun\n#8991000111\nJan 5, 09:30 Operator Example\nSHIP BY JAN 8\nSynthetic order note mentions URGENT");
   assert.equal(detail.detailUrl, "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19");
   assert.equal(detail.marketplace, "Etsy");
+  assert.equal(detail.etsyChatText, "Customer: Is my order confirmed?\nReply: Yes, it is confirmed.");
 });
 
 test("does not treat a page without an internal order ID as an order detail page", () => {

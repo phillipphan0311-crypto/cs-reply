@@ -19,6 +19,11 @@
     if (records.length) return { kind: "list", records };
   }
 
-  const detail = globalThis.CSReplyParser.parseOrderDetailDocument(document.body?.innerText, window.location.href);
+  const etsyChatText = document.querySelector("app-order-chat-box .chat-container .chat-area")?.innerText?.trim() ?? "";
+  const detail = globalThis.CSReplyParser.parseOrderDetailDocument(
+    document.body?.innerText,
+    window.location.href,
+    etsyChatText,
+  );
   return detail ? { kind: "detail", records: [detail] } : { kind: "unsupported", records: [] };
 })();

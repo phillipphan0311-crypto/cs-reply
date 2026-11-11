@@ -28,9 +28,9 @@ These are planned product areas, not claims that the features already exist.
 
 The supplied page was an Angular 22.2.3 application using ngx-datatable. The visible table included tabs such as Pending, New, Designing, Designed, and Clarification; filters for Order ID / Order No., Store Manager, and Store; and columns including ID, Store, Order Number, Order Date, Status, Items, Tags, and Notes.
 
-The extension reads currently visible table rows, and can read the rendered text of a detail page that the operator has opened manually. It does not switch tabs, paginate, scroll, open detail pages automatically, or read Etsy Inbox messages.
+The extension reads currently visible table rows, and can read the rendered text of a detail page that the operator has opened manually. When the operator expands `app-order-chat-box`, it also captures the visible `.chat-area` text in `etsyChatText`. It does not switch tabs, paginate, scroll, open detail pages, or expand the chat automatically.
 
-On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOrderId from the numeric order marker in the supported shop block, and smsInternalId from the URL query parameter. When a marker cannot be matched, leave that field empty. The full rendered body text is also retained in the extension-specific detailText field; it may include customer contact or address information.
+On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOrderId from the numeric order marker in the supported shop block, and smsInternalId from the URL query parameter. When a marker cannot be matched, leave that field empty. The full rendered body text is retained in detailText, and the expanded visible chat area is separately retained in etsyChatText; either field may include customer contact or address information.
 
 ### Canonical order record shape
 

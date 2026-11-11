@@ -17,6 +17,10 @@ test("CSV keeps the canonical IDs and joins arrays without changing their meanin
 });
 
 test("CSV keeps the complete detail text in one escaped field", () => {
-  const csv = globalThis.CSReplyExport.toCsv([{ detailText: 'Line one\nLine two, with "quotes"' }]);
+  const csv = globalThis.CSReplyExport.toCsv([{
+    detailText: 'Line one\nLine two, with "quotes"',
+    etsyChatText: 'Customer said, "hello"',
+  }]);
   assert.match(csv, /"Line one\nLine two, with ""quotes"""/);
+  assert.match(csv, /"Customer said, ""hello"""/);
 });

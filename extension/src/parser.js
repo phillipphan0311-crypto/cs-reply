@@ -94,7 +94,7 @@
     return records;
   }
 
-  function parseOrderDetailDocument(visibleText, pageUrl = "") {
+  function parseOrderDetailDocument(visibleText, pageUrl = "", etsyChatText = "") {
     let pageUrlObject;
     try { pageUrlObject = new URL(pageUrl); } catch { return null; }
     const smsInternalId = pageUrlObject.searchParams.get("id") ?? "";
@@ -130,6 +130,7 @@
       notes: "",
       detailUrl: safeUrl.href,
       detailText,
+      etsyChatText: String(etsyChatText ?? "").trim(),
     };
   }
 
