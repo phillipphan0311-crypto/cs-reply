@@ -32,7 +32,7 @@ The extension reads currently visible table rows, and can read the rendered text
 
 On `/remote-access/monitor`, the rendered `app-order-detail` component is a separate single-order source. Read its visible Order heading, Etsy number, and item title; do not use unrelated UUIDs from controls or item wrappers as smsInternalId. Keep that field empty unless the source supplies a reliable order UUID.
 
-On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOrderId from the numeric order marker in the supported shop block, and smsInternalId from the URL query parameter. When a marker cannot be matched, leave that field empty. The full rendered body text is retained in detailText, and the expanded visible chat area is separately retained in etsyChatText; either field may include customer contact or address information.
+On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOrderId from the numeric order marker in the supported shop block, and smsInternalId from the URL query parameter. When a marker cannot be matched, leave that field empty. The full rendered body text is retained in detailText, and the expanded visible chat area is separately retained in etsyChatText; either field may include customer contact or address information. The reader also exports visible item titles, rendered image URLs with query/fragment data removed, and the first Etsy listing link with tracking query/fragment data removed.
 
 ### Canonical order record shape
 
@@ -46,7 +46,7 @@ On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOr
   "orderDate": "",
   "shipDeadline": "",
   "status": "New",
-  "items": "",
+  "items": [],
   "tags": ["TEXT", "FULFILLMENT REJECTED"],
   "orderAlerts": ["URGENT", "LATE SHIP"],
   "notes": "",
@@ -66,6 +66,7 @@ The values above are illustrative examples, not live customer data.
 - Warning labels such as `URGENT` and `LATE SHIP` belong in `orderAlerts`, not in the Etsy order number.
 - Tags can be numerous and may contain spaces, for example `FULFILLMENT REJECTED` or `before cutoff`. Extract each tag/chip as a complete value.
 - Preserve the full Notes text.
+- Keep `items` as an array of visible item titles; do not merge a main item and add-ons into one string.
 - Do not infer actions from note text. In particular, there is no confirmed “Check” button; do not invent controls.
 - The UUID in the detail URL is an internal SMS identifier, not an order number.
 - Deduplicate by SMS Order ID, falling back to Etsy Order ID only when the SMS ID is absent.

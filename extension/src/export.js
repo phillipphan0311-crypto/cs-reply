@@ -3,6 +3,7 @@
     "smsOrderId", "etsyOrderId", "smsInternalId", "shop", "marketplace",
     "orderDate", "shipDeadline", "status", "items", "tags", "orderAlerts",
     "notes", "detailUrl", "detailText", "detailSource", "etsyChatText",
+    "imageUrls", "etsyListingUrl",
   ];
   const csvValue = (value) => {
     const text = Array.isArray(value) ? value.join(" | ") : String(value ?? "");

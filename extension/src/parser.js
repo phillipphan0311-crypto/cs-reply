@@ -78,7 +78,7 @@
         smsOrderId, etsyOrderId, smsInternalId,
         shop: clean(at("shop")), marketplace: "Etsy",
         orderDate: clean(at("orderDate")), shipDeadline: clean(at("shipDeadline")),
-        status: clean(at("status")), items: clean(at("items")), tags, orderAlerts,
+        status: clean(at("status")), items: clean(at("items")) ? [clean(at("items"))] : [], tags, orderAlerts,
         notes: at("notes").replace(/<br\s*\/?\s*>/gi, "\n").replace(/<[^>]*>/g, "").trim(),
         detailUrl,
       };
@@ -120,6 +120,10 @@
     const etsyOrderId = shopWindow.map((line) => line.match(/#\s*(\d{6,})/)?.[1]).find(Boolean) ?? "";
     const orderDate = shopWindow.map((line) => line.match(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{1,2}:\d{2}\b/i)?.[0]).find(Boolean) ?? "";
     const shipDeadline = detailText.match(/\bSHIP\s+BY\s+((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2})\b/i)?.[1] ?? "";
+    const rawItems = options.items;
+    const items = Array.isArray(rawItems)
+      ? [...new Set(rawItems.map((item) => String(item ?? "").trim()).filter(Boolean))]
+      : (String(rawItems ?? "").trim() ? [String(rawItems).trim()] : []);
     return {
       smsOrderId,
       etsyOrderId,
@@ -129,7 +133,7 @@
       orderDate,
       shipDeadline,
       status,
-      items: String(options.items ?? "").trim(),
+      items,
       tags: [],
       orderAlerts: [],
       notes: "",
@@ -137,6 +141,8 @@
       detailText,
       detailSource: options.detailSource ?? "order-detail",
       etsyChatText: String(options.etsyChatText ?? "").trim(),
+      imageUrls: Array.isArray(options.imageUrls) ? [...new Set(options.imageUrls)] : [],
+      etsyListingUrl: String(options.etsyListingUrl ?? "").trim(),
     };
   }
 

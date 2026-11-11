@@ -25,6 +25,7 @@ test("keeps SMS, Etsy, and internal IDs separate and extracts row data", () => {
   assert.deepEqual(records[0].tags, ["TEXT", "FULFILLMENT REJECTED"]);
   assert.equal(records[0].notes, "Synthetic note line one\nSynthetic note line two");
   assert.equal(records[0].shop, "VuEmbroidery");
+  assert.ok(Array.isArray(records[0].items));
 });
 
 test("deduplicates by SMS ID, falling back to Etsy ID only when SMS ID is missing", () => {
@@ -61,15 +62,39 @@ test("reads a remote-access monitor order without inventing smsInternalId", () =
   const detail = parseOrderDetailDocument(
     "Order #9300017\nNew\nDogFactsFun\n#8991000111\nJan 5, 09:30\nSHIP BY JAN 8",
     "https://sms.example.test/remote-access/monitor",
-    { allowMissingInternalId: true, detailSource: "remote-access-monitor", items: "Synthetic item title" },
+    { allowMissingInternalId: true, detailSource: "remote-access-monitor", items: ["Synthetic item title"] },
   );
   assert.equal(detail.smsOrderId, "9300017");
   assert.equal(detail.etsyOrderId, "8991000111");
   assert.equal(detail.smsInternalId, "");
   assert.equal(detail.shop, "DogFactsFun");
-  assert.equal(detail.items, "Synthetic item title");
+  assert.deepEqual(detail.items, ["Synthetic item title"]);
   assert.equal(detail.detailSource, "remote-access-monitor");
   assert.equal(detail.detailUrl, "https://sms.example.test/remote-access/monitor");
+});
+
+test("keeps detail item, image, and Etsy listing fields in the canonical record", () => {
+  const detail = parseOrderDetailDocument(
+    "Order #9300017\nDogFactsFun\n#8991000111",
+    "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19",
+    {
+      items: ["Synthetic item title", "Synthetic add-on"],
+      imageUrls: ["https://images.example.test/photo.jpg"],
+      etsyListingUrl: "https://www.etsy.com/listing/1234567890/synthetic-item",
+    },
+  );
+  assert.deepEqual(detail.items, ["Synthetic item title", "Synthetic add-on"]);
+  assert.deepEqual(detail.imageUrls, ["https://images.example.test/photo.jpg"]);
+  assert.equal(detail.etsyListingUrl, "https://www.etsy.com/listing/1234567890/synthetic-item");
+});
+
+test("normalizes legacy detail item strings to an array", () => {
+  const detail = parseOrderDetailDocument(
+    "Order #9300017\nDogFactsFun\n#8991000111",
+    "https://sms.example.test/orders/detail?id=22c7cf78-b966-4457-9136-08df3b396c19",
+    { items: "Synthetic legacy item" },
+  );
+  assert.deepEqual(detail.items, ["Synthetic legacy item"]);
 });
 
 test("does not treat a page without an internal order ID as an order detail page", () => {
