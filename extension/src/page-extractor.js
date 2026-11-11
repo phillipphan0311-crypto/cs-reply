@@ -20,10 +20,24 @@
   }
 
   const etsyChatText = document.querySelector("app-order-chat-box .chat-container .chat-area")?.innerText?.trim() ?? "";
+  if (window.location.pathname.replace(/\/+$/, "") === "/remote-access/monitor" && document.querySelector("app-order-detail")) {
+    const items = [...document.querySelectorAll("app-order-detail .order-item-title")]
+      .map((element) => element.innerText.trim())
+      .filter(Boolean)
+      .join(" | ");
+    const remoteDetail = globalThis.CSReplyParser.parseOrderDetailDocument(
+      document.body?.innerText,
+      window.location.href,
+      { allowMissingInternalId: true, detailSource: "remote-access-monitor", items, etsyChatText },
+    );
+    return remoteDetail
+      ? { kind: "remote-monitor", records: [remoteDetail] }
+      : { kind: "unsupported", records: [] };
+  }
   const detail = globalThis.CSReplyParser.parseOrderDetailDocument(
     document.body?.innerText,
     window.location.href,
-    etsyChatText,
+    { etsyChatText },
   );
   return detail ? { kind: "detail", records: [detail] } : { kind: "unsupported", records: [] };
 })();

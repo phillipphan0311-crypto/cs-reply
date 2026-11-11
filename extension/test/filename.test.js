@@ -16,6 +16,13 @@ test("labels detail exports and includes the SMS Order ID", () => {
   );
 });
 
+test("uses a separate filename for the remote-access monitor order", () => {
+  assert.equal(
+    globalThis.CSReplyFilename.create("remote-monitor", [{ smsOrderId: "1420283" }], "json", new Date("2026-11-11T12:00:00Z")),
+    "etsy-sms-remote-order-1420283-2026-11-11.json",
+  );
+});
+
 test("uses a safe fallback when detail ID is missing or invalid", () => {
   assert.equal(
     globalThis.CSReplyFilename.create("detail", [{ smsOrderId: "../private" }], "json", new Date("2026-11-11T12:00:00Z")),

@@ -30,6 +30,8 @@ The supplied page was an Angular 22.2.3 application using ngx-datatable. The vis
 
 The extension reads currently visible table rows, and can read the rendered text of a detail page that the operator has opened manually. When the operator expands `app-order-chat-box`, it also captures the visible `.chat-area` text in `etsyChatText`. It does not switch tabs, paginate, scroll, open detail pages, or expand the chat automatically.
 
+On `/remote-access/monitor`, the rendered `app-order-detail` component is a separate single-order source. Read its visible Order heading, Etsy number, and item title; do not use unrelated UUIDs from controls or item wrappers as smsInternalId. Keep that field empty unless the source supplies a reliable order UUID.
+
 On the detail page, smsOrderId is parsed from the explicit Order heading, etsyOrderId from the numeric order marker in the supported shop block, and smsInternalId from the URL query parameter. When a marker cannot be matched, leave that field empty. The full rendered body text is retained in detailText, and the expanded visible chat area is separately retained in etsyChatText; either field may include customer contact or address information.
 
 ### Canonical order record shape

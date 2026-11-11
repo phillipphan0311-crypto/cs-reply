@@ -26,9 +26,11 @@ async function exportOrders(format) {
     link.download = CSReplyFilename.create(result.kind, records, format);
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    status.textContent = result.kind === "detail"
-      ? (records[0].etsyChatText ? "Exported one order detail with visible chat text." : "Exported one order detail. Open the chat panel before exporting to include its messages.")
-      : "Exported " + records.length + " visible row(s).";
+    status.textContent = result.kind === "remote-monitor"
+      ? "Exported one remote-access order. SMS internal ID is not available on this page."
+      : result.kind === "detail"
+        ? (records[0].etsyChatText ? "Exported one order detail with visible chat text." : "Exported one order detail. Open the chat panel before exporting to include its messages.")
+        : "Exported " + records.length + " visible row(s).";
   } catch (error) {
     status.textContent = error.message || "Could not read this tab.";
   } finally {

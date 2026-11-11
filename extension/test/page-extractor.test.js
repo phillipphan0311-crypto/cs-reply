@@ -9,12 +9,30 @@ const extractorSource = readFileSync(new URL("../src/page-extractor.js", import.
 function extract(chatText) {
   const sandbox = {
     URL,
-    window: { location: { href: "https://sms.example.test/orders/order-detail?id=22c7cf78-b966-4457-9136-08df3b396c19" } },
+    window: { location: { href: "https://sms.example.test/orders/order-detail?id=22c7cf78-b966-4457-9136-08df3b396c19", pathname: "/orders/order-detail" } },
     document: {
       body: { innerText: "Order #9300017\nDogFactsFun\n#8991000111" },
       querySelectorAll: () => [],
       querySelector: (selector) => selector === "app-order-chat-box .chat-container .chat-area" && chatText
         ? { innerText: chatText }
+        : null,
+    },
+  };
+  runInNewContext(parserSource, sandbox);
+  return runInNewContext(extractorSource, sandbox);
+}
+
+function extractRemoteMonitor() {
+  const sandbox = {
+    URL,
+    window: { location: { href: "https://sms.example.test/remote-access/monitor", pathname: "/remote-access/monitor" } },
+    document: {
+      body: { innerText: "Order #9300017\nNew\nDogFactsFun\n#8991000111\nJan 5, 09:30" },
+      querySelectorAll: (selector) => selector === "app-order-detail .order-item-title"
+        ? [{ innerText: "Synthetic item title" }]
+        : [],
+      querySelector: (selector) => selector === "app-order-detail"
+        ? {}
         : null,
     },
   };
@@ -32,4 +50,13 @@ test("leaves chat text empty when the chat panel is collapsed", () => {
   const result = extract("");
   assert.equal(result.kind, "detail");
   assert.equal(result.records[0].etsyChatText, "");
+});
+
+test("recognizes the remote-access monitor order component", () => {
+  const result = extractRemoteMonitor();
+  assert.equal(result.kind, "remote-monitor");
+  assert.equal(result.records[0].smsOrderId, "9300017");
+  assert.equal(result.records[0].smsInternalId, "");
+  assert.equal(result.records[0].items, "Synthetic item title");
+  assert.equal(result.records[0].detailSource, "remote-access-monitor");
 });

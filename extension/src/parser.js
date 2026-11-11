@@ -94,17 +94,22 @@
     return records;
   }
 
-  function parseOrderDetailDocument(visibleText, pageUrl = "", etsyChatText = "") {
+  function parseOrderDetailDocument(visibleText, pageUrl = "", options = {}) {
     let pageUrlObject;
     try { pageUrlObject = new URL(pageUrl); } catch { return null; }
-    const smsInternalId = pageUrlObject.searchParams.get("id") ?? "";
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(smsInternalId)) return null;
+    const candidateInternalId = pageUrlObject.searchParams.get("id") ?? "";
+    const smsInternalId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(candidateInternalId)
+      ? candidateInternalId
+      : "";
+    const allowMissingInternalId = options.allowMissingInternalId === true;
+    if (!smsInternalId && !allowMissingInternalId) return null;
     const safeUrl = new URL(pageUrlObject.origin + pageUrlObject.pathname);
-    safeUrl.searchParams.set("id", smsInternalId);
+    if (smsInternalId) safeUrl.searchParams.set("id", smsInternalId);
     const detailText = String(visibleText ?? "").trim();
     const lines = detailText.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
     const headingLine = lines.find((line) => /^Order\s*#\s*\d+/i.test(line)) ?? "";
     const smsOrderId = headingLine.match(/^Order\s*#\s*(\d+)/i)?.[1] ?? "";
+    if (allowMissingInternalId && !smsOrderId) return null;
     const headingIndex = lines.indexOf(headingLine);
     const statusWindow = lines.slice(Math.max(0, headingIndex), Math.max(0, headingIndex) + 4).join(" ");
     const status = STATUSES.find((value) => new RegExp("\\b" + value + "\\b", "i").test(statusWindow)) ?? "";
@@ -124,13 +129,14 @@
       orderDate,
       shipDeadline,
       status,
-      items: "",
+      items: String(options.items ?? "").trim(),
       tags: [],
       orderAlerts: [],
       notes: "",
       detailUrl: safeUrl.href,
       detailText,
-      etsyChatText: String(etsyChatText ?? "").trim(),
+      detailSource: options.detailSource ?? "order-detail",
+      etsyChatText: String(options.etsyChatText ?? "").trim(),
     };
   }
 
